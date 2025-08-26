@@ -1,388 +1,248 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>주기율표 — Periodic Table</title>
+  <meta charset="UTF-8">
+  <title>Periodic Table</title>
   <style>
-    :root{
-      --bg:#0f1724;
-      --card:#0b1220cc;
-      --glass: rgba(255,255,255,0.03);
-      --accent: linear-gradient(135deg,#7c3aed,#06b6d4);
-      --muted: rgba(255,255,255,0.65);
-      --max-width:1200px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.10), transparent),
-                  radial-gradient(1000px 400px at 90% 90%, rgba(6,182,212,0.06), transparent),
-                  var(--bg);
-      color:#e6eef8;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:32px;
-      display:flex;
-      justify-content:center;
-    }
-    .wrap{
-      width:100%;
-      max-width:var(--max-width);
-    }
-    header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      margin-bottom:18px;
-    }
-    .title{
-      display:flex;flex-direction:column;
-    }
-    h1{margin:0;font-size:20px;letter-spacing:-0.4px}
-    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
-    .controls{
-      display:flex;gap:8px;align-items:center
-    }
-    input.search{
-      background:var(--card);
-      border:1px solid rgba(255,255,255,0.04);
-      padding:10px 12px;border-radius:10px;color:inherit;
-      min-width:180px;outline:none;backdrop-filter: blur(6px);
-    }
-    .legend{
-      display:flex;gap:8px;align-items:center;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:10px;border:1px solid rgba(255,255,255,0.03);
-    }
-    .legend .chip{font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02)}
-
-    /* table grid */
-    .table{
-      display:grid;
-      grid-template-columns: repeat(18, 1fr);
-      grid-auto-rows: 78px;
-      gap:10px;
-      background:transparent;
-      padding:14px;
-      border-radius:12px;
+    body {
+      margin: 0;
+      font-family: 'Pretendard', sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-direction: column;
+      min-height: 100vh;
+      padding-top: 70px; /* 헤더 공간 확보 */
     }
 
-    .element{
-      position:relative;
-      border-radius:10px;
-      padding:8px 10px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
-      transition: transform .18s ease, box-shadow .18s ease;
-      cursor:pointer;overflow:hidden;border:1px solid rgba(255,255,255,0.03);
-      display:flex;flex-direction:column;justify-content:space-between;
-      min-width:60px;
+    /* 상단 텍스트 로고 */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #000;
+      padding: 15px 0;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      z-index: 1000;
     }
-    .element:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 18px 40px rgba(2,6,23,0.7)}
-    .num{font-size:12px;color:var(--muted)}
-    .sym{font-size:28px;font-weight:700;letter-spacing:-1px}
-    .name{font-size:11px;color:var(--muted)}
-    .mass{font-size:12px;color:rgba(255,255,255,0.7)}
 
-    /* category colors */
-    .alkali{background:linear-gradient(135deg, rgba(124,58,237,0.12), rgba(124,58,237,0.04));border-left:4px solid #7c3aed}
-    .alkaline{background:linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.03));border-left:4px solid #10b981}
-    .transition{background:linear-gradient(135deg, rgba(234,88,12,0.06), rgba(234,88,12,0.02));border-left:4px solid #f97316}
-    .post-transition{background:linear-gradient(135deg, rgba(59,130,246,0.06), rgba(59,130,246,0.02));border-left:4px solid #3b82f6}
-    .metalloid{background:linear-gradient(135deg, rgba(249,115,22,0.06), rgba(249,115,22,0.02));border-left:4px solid #fb923c}
-    .nonmetal{background:linear-gradient(135deg, rgba(6,182,212,0.06), rgba(6,182,212,0.02));border-left:4px solid #06b6d4}
-    .halogen{background:linear-gradient(135deg, rgba(234,179,8,0.06), rgba(234,179,8,0.02));border-left:4px solid #f59e0b}
-    .noble{background:linear-gradient(135deg, rgba(99,102,241,0.06), rgba(99,102,241,0.02));border-left:4px solid #6366f1}
-    .lanthanide,.actinide{background:linear-gradient(135deg, rgba(139,92,246,0.04), rgba(139,92,246,0.02));border-left:4px solid #8b5cf6}
+    h1 {
+      margin: 20px 0;
+      font-weight: 600;
+      text-align: center;
+    }
 
-    /* modal */
-    .modal{
-      position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(2,6,23,0.6),rgba(2,6,23,0.85));backdrop-filter: blur(8px);z-index:40;padding:32px
+    .table {
+      display: grid;
+      grid-template-columns: repeat(18, 60px);
+      grid-gap: 6px;
+      justify-content: center;
     }
-    .modal.open{display:flex}
-    .card{
-      width:clamp(320px,60%,880px);background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);
-      box-shadow:0 30px 80px rgba(2,6,23,0.8)
-    }
-    .card .head{display:flex;align-items:center;gap:16px}
-    .big-sym{font-size:48px;font-weight:800}
-    .card .meta{color:var(--muted)}
-    .close{margin-left:auto;background:transparent;border:0;color:var(--muted);font-size:20px;cursor:pointer}
 
-    footer{color:var(--muted);font-size:13px;margin-top:18px;text-align:center}
+    .element {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      background: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-    @media (max-width:900px){
-      .table{grid-auto-rows:72px}
-      .element{min-width:48px}
+    .element:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255,255,255,0.8);
+      z-index: 10;
     }
-    @media (max-width:600px){
-      .table{grid-template-columns: repeat(9, 1fr)}
+
+    /* Tooltip Card */
+    .tooltip {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      color: #000;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: opacity 0.2s ease;
+      pointer-events: none;
     }
+
+    .element:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="title">
-        <h1>예쁜 주기율표</h1>
-        <p class="lead">요소를 클릭하면 자세한 정보가 표시됩니다. 검색, 범례 포함.</p>
-      </div>
-      <div class="controls">
-        <input id="search" class="search" placeholder="원소명/기호/번호로 검색(예: O, Oxygen, 8)" />
-        <div class="legend" id="legend"></div>
-      </div>
-    </header>
+  <div class="header">쿼터파이</div>
+  <h1>Periodic Table</h1>
+  <div class="table-wrap">
+    <!-- Period 1 -->
+    <div class="element" style="grid-column:1; grid-row:1;"><span class="atnum">1</span><span class="sym">H</span><div class="tooltip">1<br><span class="ename">Hydrogen (H)</span></div></div>
+    <div class="element" style="grid-column:18; grid-row:1;"><span class="atnum">2</span><span class="sym">He</span><div class="tooltip">2<br><span class="ename">Helium (He)</span></div></div>
 
-    <main>
-      <div id="table" class="table" aria-label="Periodic Table"></div>
-      <footer>Made with ❤️ — customize colors, fonts, or add links to Wikipedias.</footer>
-    </main>
+    <!-- Period 2 -->
+    <div class="element" style="grid-column:1; grid-row:2;"><span class="atnum">3</span><span class="sym">Li</span><div class="tooltip">3<br><span class="ename">Lithium (Li)</span></div></div>
+    <div class="element" style="grid-column:2; grid-row:2;"><span class="atnum">4</span><span class="sym">Be</span><div class="tooltip">4<br><span class="ename">Beryllium (Be)</span></div></div>
+    <div class="element" style="grid-column:13; grid-row:2;"><span class="atnum">5</span><span class="sym">B</span><div class="tooltip">5<br><span class="ename">Boron (B)</span></div></div>
+    <div class="element" style="grid-column:14; grid-row:2;"><span class="atnum">6</span><span class="sym">C</span><div class="tooltip">6<br><span class="ename">Carbon (C)</span></div></div>
+    <div class="element" style="grid-column:15; grid-row:2;"><span class="atnum">7</span><span class="sym">N</span><div class="tooltip">7<br><span class="ename">Nitrogen (N)</span></div></div>
+    <div class="element" style="grid-column:16; grid-row:2;"><span class="atnum">8</span><span class="sym">O</span><div class="tooltip">8<br><span class="ename">Oxygen (O)</span></div></div>
+    <div class="element" style="grid-column:17; grid-row:2;"><span class="atnum">9</span><span class="sym">F</span><div class="tooltip">9<br><span class="ename">Fluorine (F)</span></div></div>
+    <div class="element" style="grid-column:18; grid-row:2;"><span class="atnum">10</span><span class="sym">Ne</span><div class="tooltip">10<br><span class="ename">Neon (Ne)</span></div></div>
+
+    <!-- Period 3 -->
+    <div class="element" style="grid-column:1; grid-row:3;"><span class="atnum">11</span><span class="sym">Na</span><div class="tooltip">11<br><span class="ename">Sodium (Na)</span></div></div>
+    <div class="element" style="grid-column:2; grid-row:3;"><span class="atnum">12</span><span class="sym">Mg</span><div class="tooltip">12<br><span class="ename">Magnesium (Mg)</span></div></div>
+    <div class="element" style="grid-column:13; grid-row:3;"><span class="atnum">13</span><span class="sym">Al</span><div class="tooltip">13<br><span class="ename">Aluminium (Al)</span></div></div>
+    <div class="element" style="grid-column:14; grid-row:3;"><span class="atnum">14</span><span class="sym">Si</span><div class="tooltip">14<br><span class="ename">Silicon (Si)</span></div></div>
+    <div class="element" style="grid-column:15; grid-row:3;"><span class="atnum">15</span><span class="sym">P</span><div class="tooltip">15<br><span class="ename">Phosphorus (P)</span></div></div>
+    <div class="element" style="grid-column:16; grid-row:3;"><span class="atnum">16</span><span class="sym">S</span><div class="tooltip">16<br><span class="ename">Sulfur (S)</span></div></div>
+    <div class="element" style="grid-column:17; grid-row:3;"><span class="atnum">17</span><span class="sym">Cl</span><div class="tooltip">17<br><span class="ename">Chlorine (Cl)</span></div></div>
+    <div class="element" style="grid-column:18; grid-row:3;"><span class="atnum">18</span><span class="sym">Ar</span><div class="tooltip">18<br><span class="ename">Argon (Ar)</span></div></div>
+
+    <!-- Period 4 -->
+    <div class="element" style="grid-column:1; grid-row:4;"><span class="atnum">19</span><span class="sym">K</span><div class="tooltip">19<br><span class="ename">Potassium (K)</span></div></div>
+    <div class="element" style="grid-column:2; grid-row:4;"><span class="atnum">20</span><span class="sym">Ca</span><div class="tooltip">20<br><span class="ename">Calcium (Ca)</span></div></div>
+    <div class="element" style="grid-column:3; grid-row:4;"><span class="atnum">21</span><span class="sym">Sc</span><div class="tooltip">21<br><span class="ename">Scandium (Sc)</span></div></div>
+    <div class="element" style="grid-column:4; grid-row:4;"><span class="atnum">22</span><span class="sym">Ti</span><div class="tooltip">22<br><span class="ename">Titanium (Ti)</span></div></div>
+    <div class="element" style="grid-column:5; grid-row:4;"><span class="atnum">23</span><span class="sym">V</span><div class="tooltip">23<br><span class="ename">Vanadium (V)</span></div></div>
+    <div class="element" style="grid-column:6; grid-row:4;"><span class="atnum">24</span><span class="sym">Cr</span><div class="tooltip">24<br><span class="ename">Chromium (Cr)</span></div></div>
+    <div class="element" style="grid-column:7; grid-row:4;"><span class="atnum">25</span><span class="sym">Mn</span><div class="tooltip">25<br><span class="ename">Manganese (Mn)</span></div></div>
+    <div class="element" style="grid-column:8; grid-row:4;"><span class="atnum">26</span><span class="sym">Fe</span><div class="tooltip">26<br><span class="ename">Iron (Fe)</span></div></div>
+    <div class="element" style="grid-column:9; grid-row:4;"><span class="atnum">27</span><span class="sym">Co</span><div class="tooltip">27<br><span class="ename">Cobalt (Co)</span></div></div>
+    <div class="element" style="grid-column:10; grid-row:4;"><span class="atnum">28</span><span class="sym">Ni</span><div class="tooltip">28<br><span class="ename">Nickel (Ni)</span></div></div>
+    <div class="element" style="grid-column:11; grid-row:4;"><span class="atnum">29</span><span class="sym">Cu</span><div class="tooltip">29<br><span class="ename">Copper (Cu)</span></div></div>
+    <div class="element" style="grid-column:12; grid-row:4;"><span class="atnum">30</span><span class="sym">Zn</span><div class="tooltip">30<br><span class="ename">Zinc (Zn)</span></div></div>
+    <div class="element" style="grid-column:13; grid-row:4;"><span class="atnum">31</span><span class="sym">Ga</span><div class="tooltip">31<br><span class="ename">Gallium (Ga)</span></div></div>
+    <div class="element" style="grid-column:14; grid-row:4;"><span class="atnum">32</span><span class="sym">Ge</span><div class="tooltip">32<br><span class="ename">Germanium (Ge)</span></div></div>
+    <div class="element" style="grid-column:15; grid-row:4;"><span class="atnum">33</span><span class="sym">As</span><div class="tooltip">33<br><span class="ename">Arsenic (As)</span></div></div>
+    <div class="element" style="grid-column:16; grid-row:4;"><span class="atnum">34</span><span class="sym">Se</span><div class="tooltip">34<br><span class="ename">Selenium (Se)</span></div></div>
+    <div class="element" style="grid-column:17; grid-row:4;"><span class="atnum">35</span><span class="sym">Br</span><div class="tooltip">35<br><span class="ename">Bromine (Br)</span></div></div>
+    <div class="element" style="grid-column:18; grid-row:4;"><span class="atnum">36</span><span class="sym">Kr</span><div class="tooltip">36<br><span class="ename">Krypton (Kr)</span></div></div>
+
+    <!-- Period 5 -->
+    <div class="element" style="grid-column:1; grid-row:5;"><span class="atnum">37</span><span class="sym">Rb</span><div class="tooltip">37<br><span class="ename">Rubidium (Rb)</span></div></div>
+    <div class="element" style="grid-column:2; grid-row:5;"><span class="atnum">38</span><span class="sym">Sr</span><div class="tooltip">38<br><span class="ename">Strontium (Sr)</span></div></div>
+    <div class="element" style="grid-column:3; grid-row:5;"><span class="atnum">39</span><span class="sym">Y</span><div class="tooltip">39<br><span class="ename">Yttrium (Y)</span></div></div>
+    <div class="element" style="grid-column:4; grid-row:5;"><span class="atnum">40</span><span class="sym">Zr</span><div class="tooltip">40<br><span class="ename">Zirconium (Zr)</span></div></div>
+    <div class="element" style="grid-column:5; grid-row:5;"><span class="atnum">41</span><span class="sym">Nb</span><div class="tooltip">41<br><span class="ename">Niobium (Nb)</span></div></div>
+    <div class="element" style="grid-column:6; grid-row:5;"><span class="atnum">42</span><span class="sym">Mo</span><div class="tooltip">42<br><span class="ename">Molybdenum (Mo)</span></div></div>
+    <div class="element" style="grid-column:7; grid-row:5;"><span class="atnum">43</span><span class="sym">Tc</span><div class="tooltip">43<br><span class="ename">Technetium (Tc)</span></div></div>
+    <div class="element" style="grid-column:8; grid-row:5;"><span class="atnum">44</span><span class="sym">Ru</span><div class="tooltip">44<br><span class="ename">Ruthenium (Ru)</span></div></div>
+    <div class="element" style="grid-column:9; grid-row:5;"><span class="atnum">45</span><span class="sym">Rh</span><div class="tooltip">45<br><span class="ename">Rhodium (Rh)</span></div></div>
+    <div class="element" style="grid-column:10; grid-row:5;"><span class="atnum">46</span><span class="sym">Pd</span><div class="tooltip">46<br><span class="ename">Palladium (Pd)</span></div></div>
+    <div class="element" style="grid-column:11; grid-row:5;"><span class="atnum">47</span><span class="sym">Ag</span><div class="tooltip">47<br><span class="ename">Silver (Ag)</span></div></div>
+    <div class="element" style="grid-column:12; grid-row:5;"><span class="atnum">48</span><span class="sym">Cd</span><div class="tooltip">48<br><span class="ename">Cadmium (Cd)</span></div></div>
+    <div class="element" style="grid-column:13; grid-row:5;"><span class="atnum">49</span><span class="sym">In</span><div class="tooltip">49<br><span class="ename">Indium (In)</span></div></div>
+    <div class="element" style="grid-column:14; grid-row:5;"><span class="atnum">50</span><span class="sym">Sn</span><div class="tooltip">50<br><span class="ename">Tin (Sn)</span></div></div>
+    <div class="element" style="grid-column:15; grid-row:5;"><span class="atnum">51</span><span class="sym">Sb</span><div class="tooltip">51<br><span class="ename">Antimony (Sb)</span></div></div>
+    <div class="element" style="grid-column:16; grid-row:5;"><span class="atnum">52</span><span class="sym">Te</span><div class="tooltip">52<br><span class="ename">Tellurium (Te)</span></div></div>
+    <div class="element" style="grid-column:17; grid-row:5;"><span class="atnum">53</span><span class="sym">I</span><div class="tooltip">53<br><span class="ename">Iodine (I)</span></div></div>
+    <div class="element" style="grid-column:18; grid-row:5;"><span class="atnum">54</span><span class="sym">Xe</span><div class="tooltip">54<br><span class="ename">Xenon (Xe)</span></div></div>
+
+    <!-- Period 6 -->
+    <div class="element" style="grid-column:1; grid-row:6;"><span class="atnum">55</span><span class="sym">Cs</span><div class="tooltip">55<br><span class="ename">Caesium (Cs)</span></div></div>
+    <div class="element" style="grid-column:2; grid-row:6;"><span class="atnum">56</span><span class="sym">Ba</span><div class="tooltip">56<br><span class="ename">Barium (Ba)</span></div></div>
+    <div class="element" style="grid-column:3; grid-row:6;"><span class="atnum">57</span><span class="sym">La</span><div class="tooltip">57<br><span class="ename">Lanthanum (La)</span></div></div>
+    <div class="element" style="grid-column:4; grid-row:6;"><span class="atnum">72</span><span class="sym">Hf</span><div class="tooltip">72<br><span class="ename">Hafnium (Hf)</span></div></div>
+    <div class="element" style="grid-column:5; grid-row:6;"><span class="atnum">73</span><span class="sym">Ta</span><div class="tooltip">73<br><span class="ename">Tantalum (Ta)</span></div></div>
+    <div class="element" style="grid-column:6; grid-row:6;"><span class="atnum">74</span><span class="sym">W</span><div class="tooltip">74<br><span class="ename">Tungsten (W)</span></div></div>
+    <div class="element" style="grid-column:7; grid-row:6;"><span class="atnum">75</span><span class="sym">Re</span><div class="tooltip">75<br><span class="ename">Rhenium (Re)</span></div></div>
+    <div class="element" style="grid-column:8; grid-row:6;"><span class="atnum">76</span><span class="sym">Os</span><div class="tooltip">76<br><span class="ename">Osmium (Os)</span></div></div>
+    <div class="element" style="grid-column:9; grid-row:6;"><span class="atnum">77</span><span class="sym">Ir</span><div class="tooltip">77<br><span class="ename">Iridium (Ir)</span></div></div>
+    <div class="element" style="grid-column:10; grid-row:6;"><span class="atnum">78</span><span class="sym">Pt</span><div class="tooltip">78<br><span class="ename">Platinum (Pt)</span></div></div>
+    <div class="element" style="grid-column:11; grid-row:6;"><span class="atnum">79</span><span class="sym">Au</span><div class="tooltip">79<br><span class="ename">Gold (Au)</span></div></div>
+    <div class="element" style="grid-column:12; grid-row:6;"><span class="atnum">80</span><span class="sym">Hg</span><div class="tooltip">80<br><span class="ename">Mercury (Hg)</span></div></div>
+    <div class="element" style="grid-column:13; grid-row:6;"><span class="atnum">81</span><span class="sym">Tl</span><div class="tooltip">81<br><span class="ename">Thallium (Tl)</span></div></div>
+    <div class="element" style="grid-column:14; grid-row:6;"><span class="atnum">82</span><span class="sym">Pb</span><div class="tooltip">82<br><span class="ename">Lead (Pb)</span></div></div>
+    <div class="element" style="grid-column:15; grid-row:6;"><span class="atnum">83</span><span class="sym">Bi</span><div class="tooltip">83<br><span class="ename">Bismuth (Bi)</span></div></div>
+    <div class="element" style="grid-column:16; grid-row:6;"><span class="atnum">84</span><span class="sym">Po</span><div class="tooltip">84<br><span class="ename">Polonium (Po)</span></div></div>
+    <div class="element" style="grid-column:17; grid-row:6;"><span class="atnum">85</span><span class="sym">At</span><div class="tooltip">85<br><span class="ename">Astatine (At)</span></div></div>
+    <div class="element" style="grid-column:18; grid-row:6;"><span class="atnum">86</span><span class="sym">Rn</span><div class="tooltip">86<br><span class="ename">Radon (Rn)</span></div></div>
+
+    <!-- Period 7 -->
+    <div class="element" style="grid-column:1; grid-row:7;"><span class="atnum">87</span><span class="sym">Fr</span><div class="tooltip">87<br><span class="ename">Francium (Fr)</span></div></div>
+    <div class="element" style="grid-column:2; grid-row:7;"><span class="atnum">88</span><span class="sym">Ra</span><div class="tooltip">88<br><span class="ename">Radium (Ra)</span></div></div>
+    <div class="element" style="grid-column:3; grid-row:7;"><span class="atnum">89</span><span class="sym">Ac</span><div class="tooltip">89<br><span class="ename">Actinium (Ac)</span></div></div>
+    <div class="element" style="grid-column:4; grid-row:7;"><span class="atnum">104</span><span class="sym">Rf</span><div class="tooltip">104<br><span class="ename">Rutherfordium (Rf)</span></div></div>
+    <div class="element" style="grid-column:5; grid-row:7;"><span class="atnum">105</span><span class="sym">Db</span><div class="tooltip">105<br><span class="ename">Dubnium (Db)</span></div></div>
+    <div class="element" style="grid-column:6; grid-row:7;"><span class="atnum">106</span><span class="sym">Sg</span><div class="tooltip">106<br><span class="ename">Seaborgium (Sg)</span></div></div>
+    <div class="element" style="grid-column:7; grid-row:7;"><span class="atnum">107</span><span class="sym">Bh</span><div class="tooltip">107<br><span class="ename">Bohrium (Bh)</span></div></div>
+    <div class="element" style="grid-column:8; grid-row:7;"><span class="atnum">108</span><span class="sym">Hs</span><div class="tooltip">108<br><span class="ename">Hassium (Hs)</span></div></div>
+    <div class="element" style="grid-column:9; grid-row:7;"><span class="atnum">109</span><span class="sym">Mt</span><div class="tooltip">109<br><span class="ename">Meitnerium (Mt)</span></div></div>
+    <div class="element" style="grid-column:10; grid-row:7;"><span class="atnum">110</span><span class="sym">Ds</span><div class="tooltip">110<br><span class="ename">Darmstadtium (Ds)</span></div></div>
+    <div class="element" style="grid-column:11; grid-row:7;"><span class="atnum">111</span><span class="sym">Rg</span><div class="tooltip">111<br><span class="ename">Roentgenium (Rg)</span></div></div>
+    <div class="element" style="grid-column:12; grid-row:7;"><span class="atnum">112</span><span class="sym">Cn</span><div class="tooltip">112<br><span class="ename">Copernicium (Cn)</span></div></div>
+    <div class="element" style="grid-column:13; grid-row:7;"><span class="atnum">113</span><span class="sym">Nh</span><div class="tooltip">113<br><span class="ename">Nihonium (Nh)</span></div></div>
+    <div class="element" style="grid-column:14; grid-row:7;"><span class="atnum">114</span><span class="sym">Fl</span><div class="tooltip">114<br><span class="ename">Flerovium (Fl)</span></div></div>
+    <div class="element" style="grid-column:15; grid-row:7;"><span class="atnum">115</span><span class="sym">Mc</span><div class="tooltip">115<br><span class="ename">Moscovium (Mc)</span></div></div>
+    <div class="element" style="grid-column:16; grid-row:7;"><span class="atnum">116</span><span class="sym">Lv</span><div class="tooltip">116<br><span class="ename">Livermorium (Lv)</span></div></div>
+    <div class="element" style="grid-column:17; grid-row:7;"><span class="atnum">117</span><span class="sym">Ts</span><div class="tooltip">117<br><span class="ename">Tennessine (Ts)</span></div></div>
+    <div class="element" style="grid-column:18; grid-row:7;"><span class="atnum">118</span><span class="sym">Og</span><div class="tooltip">118<br><span class="ename">Oganesson (Og)</span></div></div>
+
+    <!-- Spacer label before lanthanides -->
+    <div class="label-row"></div>
+
+    <!-- Lanthanides (placed in a separate row) 57-71 -->
+    <div class="element" style="grid-column:4; grid-row:9;"><span class="atnum">57</span><span class="sym">La</span><div class="tooltip">57<br><span class="ename">Lanthanum (La)</span></div></div>
+    <div class="element" style="grid-column:5; grid-row:9;"><span class="atnum">58</span><span class="sym">Ce</span><div class="tooltip">58<br><span class="ename">Cerium (Ce)</span></div></div>
+    <div class="element" style="grid-column:6; grid-row:9;"><span class="atnum">59</span><span class="sym">Pr</span><div class="tooltip">59<br><span class="ename">Praseodymium (Pr)</span></div></div>
+    <div class="element" style="grid-column:7; grid-row:9;"><span class="atnum">60</span><span class="sym">Nd</span><div class="tooltip">60<br><span class="ename">Neodymium (Nd)</span></div></div>
+    <div class="element" style="grid-column:8; grid-row:9;"><span class="atnum">61</span><span class="sym">Pm</span><div class="tooltip">61<br><span class="ename">Promethium (Pm)</span></div></div>
+    <div class="element" style="grid-column:9; grid-row:9;"><span class="atnum">62</span><span class="sym">Sm</span><div class="tooltip">62<br><span class="ename">Samarium (Sm)</span></div></div>
+    <div class="element" style="grid-column:10; grid-row:9;"><span class="atnum">63</span><span class="sym">Eu</span><div class="tooltip">63<br><span class="ename">Europium (Eu)</span></div></div>
+    <div class="element" style="grid-column:11; grid-row:9;"><span class="atnum">64</span><span class="sym">Gd</span><div class="tooltip">64<br><span class="ename">Gadolinium (Gd)</span></div></div>
+    <div class="element" style="grid-column:12; grid-row:9;"><span class="atnum">65</span><span class="sym">Tb</span><div class="tooltip">65<br><span class="ename">Terbium (Tb)</span></div></div>
+    <div class="element" style="grid-column:13; grid-row:9;"><span class="atnum">66</span><span class="sym">Dy</span><div class="tooltip">66<br><span class="ename">Dysprosium (Dy)</span></div></div>
+    <div class="element" style="grid-column:14; grid-row:9;"><span class="atnum">67</span><span class="sym">Ho</span><div class="tooltip">67<br><span class="ename">Holmium (Ho)</span></div></div>
+    <div class="element" style="grid-column:15; grid-row:9;"><span class="atnum">68</span><span class="sym">Er</span><div class="tooltip">68<br><span class="ename">Erbium (Er)</span></div></div>
+    <div class="element" style="grid-column:16; grid-row:9;"><span class="atnum">69</span><span class="sym">Tm</span><div class="tooltip">69<br><span class="ename">Thulium (Tm)</span></div></div>
+    <div class="element" style="grid-column:17; grid-row:9;"><span class="atnum">70</span><span class="sym">Yb</span><div class="tooltip">70<br><span class="ename">Ytterbium (Yb)</span></div></div>
+    <div class="element" style="grid-column:18; grid-row:9;"><span class="atnum">71</span><span class="sym">Lu</span><div class="tooltip">71<br><span class="ename">Lutetium (Lu)</span></div></div>
+
+    <!-- Actinides (89-103) -->
+    <div class="element" style="grid-column:4; grid-row:10;"><span class="atnum">89</span><span class="sym">Ac</span><div class="tooltip">89<br><span class="ename">Actinium (Ac)</span></div></div>
+    <div class="element" style="grid-column:5; grid-row:10;"><span class="atnum">90</span><span class="sym">Th</span><div class="tooltip">90<br><span class="ename">Thorium (Th)</span></div></div>
+    <div class="element" style="grid-column:6; grid-row:10;"><span class="atnum">91</span><span class="sym">Pa</span><div class="tooltip">91<br><span class="ename">Protactinium (Pa)</span></div></div>
+    <div class="element" style="grid-column:7; grid-row:10;"><span class="atnum">92</span><span class="sym">U</span><div class="tooltip">92<br><span class="ename">Uranium (U)</span></div></div>
+    <div class="element" style="grid-column:8; grid-row:10;"><span class="atnum">93</span><span class="sym">Np</span><div class="tooltip">93<br><span class="ename">Neptunium (Np)</span></div></div>
+    <div class="element" style="grid-column:9; grid-row:10;"><span class="atnum">94</span><span class="sym">Pu</span><div class="tooltip">94<br><span class="ename">Plutonium (Pu)</span></div></div>
+    <div class="element" style="grid-column:10; grid-row:10;"><span class="atnum">95</span><span class="sym">Am</span><div class="tooltip">95<br><span class="ename">Americium (Am)</span></div></div>
+    <div class="element" style="grid-column:11; grid-row:10;"><span class="atnum">96</span><span class="sym">Cm</span><div class="tooltip">96<br><span class="ename">Curium (Cm)</span></div></div>
+    <div class="element" style="grid-column:12; grid-row:10;"><span class="atnum">97</span><span class="sym">Bk</span><div class="tooltip">97<br><span class="ename">Berkelium (Bk)</span></div></div>
+    <div class="element" style="grid-column:13; grid-row:10;"><span class="atnum">98</span><span class="sym">Cf</span><div class="tooltip">98<br><span class="ename">Californium (Cf)</span></div></div>
+    <div class="element" style="grid-column:14; grid-row:10;"><span class="atnum">99</span><span class="sym">Es</span><div class="tooltip">99<br><span class="ename">Einsteinium (Es)</span></div></div>
+    <div class="element" style="grid-column:15; grid-row:10;"><span class="atnum">100</span><span class="sym">Fm</span><div class="tooltip">100<br><span class="ename">Fermium (Fm)</span></div></div>
+    <div class="element" style="grid-column:16; grid-row:10;"><span class="atnum">101</span><span class="sym">Md</span><div class="tooltip">101<br><span class="ename">Mendelevium (Md)</span></div></div>
+    <div class="element" style="grid-column:17; grid-row:10;"><span class="atnum">102</span><span class="sym">No</span><div class="tooltip">102<br><span class="ename">Nobelium (No)</span></div></div>
+    <div class="element" style="grid-column:18; grid-row:10;"><span class="atnum">103</span><span class="sym">Lr</span><div class="tooltip">103<br><span class="ename">Lawrencium (Lr)</span></div></div>
+
   </div>
 
-  <div id="modal" class="modal" role="dialog" aria-hidden="true">
-    <div class="card">
-      <div class="head">
-        <div>
-          <div id="modal-sym" class="big-sym">H</div>
-          <div id="modal-name" style="font-weight:700;font-size:18px">Hydrogen</div>
-        </div>
-        <div class="meta">
-          <div id="modal-num">1</div>
-          <div id="modal-mass" style="margin-top:6px;color:var(--muted)"></div>
-        </div>
-        <button id="close" class="close">✕</button>
-      </div>
-      <div style="margin-top:12px;color:var(--muted)" id="modal-desc">카테고리, 전자배치 등 간단한 설명이 여기에 표시됩니다.</div>
-    </div>
-  </div>
-
-  <script>
-    // compact element dataset (118 elements). Each: number, symbol, name, mass, group, period, category
-    const elements = [
-      {n:1,s:'H',name:'Hydrogen',m:'1.008',g:1,p:1,cat:'nonmetal'},
-      {n:2,s:'He',name:'Helium',m:'4.0026',g:18,p:1,cat:'noble'},
-      {n:3,s:'Li',name:'Lithium',m:'6.94',g:1,p:2,cat:'alkali'},
-      {n:4,s:'Be',name:'Beryllium',m:'9.0122',g:2,p:2,cat:'alkaline'},
-      {n:5,s:'B',name:'Boron',m:'10.81',g:13,p:2,cat:'metalloid'},
-      {n:6,s:'C',name:'Carbon',m:'12.011',g:14,p:2,cat:'nonmetal'},
-      {n:7,s:'N',name:'Nitrogen',m:'14.007',g:15,p:2,cat:'nonmetal'},
-      {n:8,s:'O',name:'Oxygen',m:'15.999',g:16,p:2,cat:'nonmetal'},
-      {n:9,s:'F',name:'Fluorine',m:'18.998',g:17,p:2,cat:'halogen'},
-      {n:10,s:'Ne',name:'Neon',m:'20.180',g:18,p:2,cat:'noble'},
-      {n:11,s:'Na',name:'Sodium',m:'22.990',g:1,p:3,cat:'alkali'},
-      {n:12,s:'Mg',name:'Magnesium',m:'24.305',g:2,p:3,cat:'alkaline'},
-      {n:13,s:'Al',name:'Aluminium',m:'26.982',g:13,p:3,cat:'post-transition'},
-      {n:14,s:'Si',name:'Silicon',m:'28.085',g:14,p:3,cat:'metalloid'},
-      {n:15,s:'P',name:'Phosphorus',m:'30.974',g:15,p:3,cat:'nonmetal'},
-      {n:16,s:'S',name:'Sulfur',m:'32.06',g:16,p:3,cat:'nonmetal'},
-      {n:17,s:'Cl',name:'Chlorine',m:'35.45',g:17,p:3,cat:'halogen'},
-      {n:18,s:'Ar',name:'Argon',m:'39.948',g:18,p:3,cat:'noble'},
-      {n:19,s:'K',name:'Potassium',m:'39.098',g:1,p:4,cat:'alkali'},
-      {n:20,s:'Ca',name:'Calcium',m:'40.078',g:2,p:4,cat:'alkaline'},
-      {n:21,s:'Sc',name:'Scandium',m:'44.956',g:3,p:4,cat:'transition'},
-      {n:22,s:'Ti',name:'Titanium',m:'47.867',g:4,p:4,cat:'transition'},
-      {n:23,s:'V',name:'Vanadium',m:'50.942',g:5,p:4,cat:'transition'},
-      {n:24,s:'Cr',name:'Chromium',m:'51.996',g:6,p:4,cat:'transition'},
-      {n:25,s:'Mn',name:'Manganese',m:'54.938',g:7,p:4,cat:'transition'},
-      {n:26,s:'Fe',name:'Iron',m:'55.845',g:8,p:4,cat:'transition'},
-      {n:27,s:'Co',name:'Cobalt',m:'58.933',g:9,p:4,cat:'transition'},
-      {n:28,s:'Ni',name:'Nickel',m:'58.693',g:10,p:4,cat:'transition'},
-      {n:29,s:'Cu',name:'Copper',m:'63.546',g:11,p:4,cat:'transition'},
-      {n:30,s:'Zn',name:'Zinc',m:'65.38',g:12,p:4,cat:'transition'},
-      {n:31,s:'Ga',name:'Gallium',m:'69.723',g:13,p:4,cat:'post-transition'},
-      {n:32,s:'Ge',name:'Germanium',m:'72.630',g:14,p:4,cat:'metalloid'},
-      {n:33,s:'As',name:'Arsenic',m:'74.922',g:15,p:4,cat:'metalloid'},
-      {n:34,s:'Se',name:'Selenium',m:'78.971',g:16,p:4,cat:'nonmetal'},
-      {n:35,s:'Br',name:'Bromine',m:'79.904',g:17,p:4,cat:'halogen'},
-      {n:36,s:'Kr',name:'Krypton',m:'83.798',g:18,p:4,cat:'noble'},
-      {n:37,s:'Rb',name:'Rubidium',m:'85.468',g:1,p:5,cat:'alkali'},
-      {n:38,s:'Sr',name:'Strontium',m:'87.62',g:2,p:5,cat:'alkaline'},
-      {n:39,s:'Y',name:'Yttrium',m:'88.906',g:3,p:5,cat:'transition'},
-      {n:40,s:'Zr',name:'Zirconium',m:'91.224',g:4,p:5,cat:'transition'},
-      {n:41,s:'Nb',name:'Niobium',m:'92.906',g:5,p:5,cat:'transition'},
-      {n:42,s:'Mo',name:'Molybdenum',m:'95.95',g:6,p:5,cat:'transition'},
-      {n:43,s:'Tc',name:'Technetium',m:'98',g:7,p:5,cat:'transition'},
-      {n:44,s:'Ru',name:'Ruthenium',m:'101.07',g:8,p:5,cat:'transition'},
-      {n:45,s:'Rh',name:'Rhodium',m:'102.91',g:9,p:5,cat:'transition'},
-      {n:46,s:'Pd',name:'Palladium',m:'106.42',g:10,p:5,cat:'transition'},
-      {n:47,s:'Ag',name:'Silver',m:'107.87',g:11,p:5,cat:'transition'},
-      {n:48,s:'Cd',name:'Cadmium',m:'112.41',g:12,p:5,cat:'transition'},
-      {n:49,s:'In',name:'Indium',m:'114.82',g:13,p:5,cat:'post-transition'},
-      {n:50,s:'Sn',name:'Tin',m:'118.71',g:14,p:5,cat:'post-transition'},
-      {n:51,s:'Sb',name:'Antimony',m:'121.76',g:15,p:5,cat:'metalloid'},
-      {n:52,s:'Te',name:'Tellurium',m:'127.60',g:16,p:5,cat:'metalloid'},
-      {n:53,s:'I',name:'Iodine',m:'126.90',g:17,p:5,cat:'halogen'},
-      {n:54,s:'Xe',name:'Xenon',m:'131.29',g:18,p:5,cat:'noble'},
-      {n:55,s:'Cs',name:'Cesium',m:'132.91',g:1,p:6,cat:'alkali'},
-      {n:56,s:'Ba',name:'Barium',m:'137.33',g:2,p:6,cat:'alkaline'},
-      {n:57,s:'La',name:'Lanthanum',m:'138.91',g:3,p:6,cat:'lanthanide'},
-      {n:58,s:'Ce',name:'Cerium',m:'140.12',g:null,p:6,cat:'lanthanide'},
-      {n:59,s:'Pr',name:'Praseodymium',m:'140.91',g:null,p:6,cat:'lanthanide'},
-      {n:60,s:'Nd',name:'Neodymium',m:'144.24',g:null,p:6,cat:'lanthanide'},
-      {n:61,s:'Pm',name:'Promethium',m:'145',g:null,p:6,cat:'lanthanide'},
-      {n:62,s:'Sm',name:'Samarium',m:'150.36',g:null,p:6,cat:'lanthanide'},
-      {n:63,s:'Eu',name:'Europium',m:'151.96',g:null,p:6,cat:'lanthanide'},
-      {n:64,s:'Gd',name:'Gadolinium',m:'157.25',g:null,p:6,cat:'lanthanide'},
-      {n:65,s:'Tb',name:'Terbium',m:'158.93',g:null,p:6,cat:'lanthanide'},
-      {n:66,s:'Dy',name:'Dysprosium',m:'162.50',g:null,p:6,cat:'lanthanide'},
-      {n:67,s:'Ho',name:'Holmium',m:'164.93',g:null,p:6,cat:'lanthanide'},
-      {n:68,s:'Er',name:'Erbium',m:'167.26',g:null,p:6,cat:'lanthanide'},
-      {n:69,s:'Tm',name:'Thulium',m:'168.93',g:null,p:6,cat:'lanthanide'},
-      {n:70,s:'Yb',name:'Ytterbium',m:'173.05',g:null,p:6,cat:'lanthanide'},
-      {n:71,s:'Lu',name:'Lutetium',m:'174.97',g:3,p:6,cat:'lanthanide'},
-      {n:72,s:'Hf',name:'Hafnium',m:'178.49',g:4,p:6,cat:'transition'},
-      {n:73,s:'Ta',name:'Tantalum',m:'180.95',g:5,p:6,cat:'transition'},
-      {n:74,s:'W',name:'Tungsten',m:'183.84',g:6,p:6,cat:'transition'},
-      {n:75,s:'Re',name:'Rhenium',m:'186.21',g:7,p:6,cat:'transition'},
-      {n:76,s:'Os',name:'Osmium',m:'190.23',g:8,p:6,cat:'transition'},
-      {n:77,s:'Ir',name:'Iridium',m:'192.22',g:9,p:6,cat:'transition'},
-      {n:78,s:'Pt',name:'Platinum',m:'195.08',g:10,p:6,cat:'transition'},
-      {n:79,s:'Au',name:'Gold',m:'196.97',g:11,p:6,cat:'transition'},
-      {n:80,s:'Hg',name:'Mercury',m:'200.59',g:12,p:6,cat:'transition'},
-      {n:81,s:'Tl',name:'Thallium',m:'204.38',g:13,p:6,cat:'post-transition'},
-      {n:82,s:'Pb',name:'Lead',m:'207.2',g:14,p:6,cat:'post-transition'},
-      {n:83,s:'Bi',name:'Bismuth',m:'208.98',g:15,p:6,cat:'post-transition'},
-      {n:84,s:'Po',name:'Polonium',m:'209',g:16,p:6,cat:'metalloid'},
-      {n:85,s:'At',name:'Astatine',m:'210',g:17,p:6,cat:'halogen'},
-      {n:86,s:'Rn',name:'Radon',m:'222',g:18,p:6,cat:'noble'},
-      {n:87,s:'Fr',name:'Francium',m:'223',g:1,p:7,cat:'alkali'},
-      {n:88,s:'Ra',name:'Radium',m:'226',g:2,p:7,cat:'alkaline'},
-      {n:89,s:'Ac',name:'Actinium',m:'227',g:3,p:7,cat:'actinide'},
-      {n:90,s:'Th',name:'Thorium',m:'232.04',g:null,p:7,cat:'actinide'},
-      {n:91,s:'Pa',name:'Protactinium',m:'231.04',g:null,p:7,cat:'actinide'},
-      {n:92,s:'U',name:'Uranium',m:'238.03',g:null,p:7,cat:'actinide'},
-      {n:93,s:'Np',name:'Neptunium',m:'237',g:null,p:7,cat:'actinide'},
-      {n:94,s:'Pu',name:'Plutonium',m:'244',g:null,p:7,cat:'actinide'},
-      {n:95,s:'Am',name:'Americium',m:'243',g:null,p:7,cat:'actinide'},
-      {n:96,s:'Cm',name:'Curium',m:'247',g:null,p:7,cat:'actinide'},
-      {n:97,s:'Bk',name:'Berkelium',m:'247',g:null,p:7,cat:'actinide'},
-      {n:98,s:'Cf',name:'Californium',m:'251',g:null,p:7,cat:'actinide'},
-      {n:99,s:'Es',name:'Einsteinium',m:'252',g:null,p:7,cat:'actinide'},
-      {n:100,s:'Fm',name:'Fermium',m:'257',g:null,p:7,cat:'actinide'},
-      {n:101,s:'Md',name:'Mendelevium',m:'258',g:null,p:7,cat:'actinide'},
-      {n:102,s:'No',name:'Nobelium',m:'259',g:null,p:7,cat:'actinide'},
-      {n:103,s:'Lr',name:'Lawrencium',m:'266',g:3,p:7,cat:'actinide'},
-      {n:104,s:'Rf',name:'Rutherfordium',m:'267',g:4,p:7,cat:'transition'},
-      {n:105,s:'Db',name:'Dubnium',m:'268',g:5,p:7,cat:'transition'},
-      {n:106,s:'Sg',name:'Seaborgium',m:'269',g:6,p:7,cat:'transition'},
-      {n:107,s:'Bh',name:'Bohrium',m:'270',g:7,p:7,cat:'transition'},
-      {n:108,s:'Hs',name:'Hassium',m:'270',g:8,p:7,cat:'transition'},
-      {n:109,s:'Mt',name:'Meitnerium',m:'278',g:9,p:7,cat:'transition'},
-      {n:110,s:'Ds',name:'Darmstadtium',m:'281',g:10,p:7,cat:'transition'},
-      {n:111,s:'Rg',name:'Roentgenium',m:'282',g:11,p:7,cat:'transition'},
-      {n:112,s:'Cn',name:'Copernicium',m:'285',g:12,p:7,cat:'transition'},
-      {n:113,s:'Nh',name:'Nihonium',m:'286',g:13,p:7,cat:'post-transition'},
-      {n:114,s:'Fl',name:'Flerovium',m:'289',g:14,p:7,cat:'post-transition'},
-      {n:115,s:'Mc',name:'Moscovium',m:'289',g:15,p:7,cat:'post-transition'},
-      {n:116,s:'Lv',name:'Livermorium',m:'293',g:16,p:7,cat:'post-transition'},
-      {n:117,s:'Ts',name:'Tennessine',m:'294',g:17,p:7,cat:'halogen'},
-      {n:118,s:'Og',name:'Oganesson',m:'294',g:18,p:7,cat:'noble'}
-    ];
-
-    // grid positions for main table: we'll position using period (row) and group (col). For lanth/actin, we'll place them in two rows separately
-    const tableEl = document.getElementById('table');
-    const modal = document.getElementById('modal');
-    const modalSym = document.getElementById('modal-sym');
-    const modalName = document.getElementById('modal-name');
-    const modalNum = document.getElementById('modal-num');
-    const modalMass = document.getElementById('modal-mass');
-    const modalDesc = document.getElementById('modal-desc');
-    const closeBtn = document.getElementById('close');
-
-    const categoryNames = {
-      alkali:'Alkali Metal',alkaline:'Alkaline Earth',transition:'Transition Metal',post-transition:'Post-transition',
-      metalloid:'Metalloid',nonmetal:'Nonmetal',halogen:'Halogen',noble:'Noble Gas',lanthanide:'Lanthanide',actinide:'Actinide'
-    }
-
-    function createTile(el){
-      const d = document.createElement('div');
-      d.className = 'element '+(el.cat||'');
-      d.innerHTML = `\n        <div class='num'>${el.n}</div>\n        <div class='sym'>${el.s}</div>\n        <div class='name'>${el.name}</div>\n        <div class='mass'>${el.m}</div>\n      `;
-      d.addEventListener('click', ()=>openModal(el));
-      d.setAttribute('data-search',`${el.n} ${el.s} ${el.name}`.toLowerCase());
-      // position
-      if(el.cat==='lanthanide' || el.cat==='actinide'){
-        // put lanthanides row at grid-row:8 and actinides at 9, start at col 3
-        const row = (el.cat==='lanthanide')?8:9;
-        const index = elements.filter(x=>x.cat===el.cat).map(x=>x.n).indexOf(el.n);
-        d.style.gridColumn = `${3+index}`;
-        d.style.gridRow = row;
-      } else {
-        if(el.g){
-          d.style.gridColumn = el.g;
-          d.style.gridRow = el.p;
-        } else {
-          // some lanthanide/actinide placeholders already handled
-        }
-      }
-      return d;
-    }
-
-    // create empty placeholders for proper layout: Fill grid with invisible blanks for empty cells (1..7 periods x 18 groups)
-    const totalRows = 9; // 1..7 + lanth(8) + act(9)
-    const totalCols = 18;
-    // create a base grid of empties to ensure spacing
-    for(let r=1;r<=totalRows;r++){
-      for(let c=1;c<=totalCols;c++){
-        const key = `cell-${r}-${c}`;
-        const placeholder = document.createElement('div');
-        placeholder.style.gridColumn = c;
-        placeholder.style.gridRow = r;
-        placeholder.style.opacity = 0;
-        tableEl.appendChild(placeholder);
-      }
-    }
-
-    elements.forEach(el=>{
-      const tile = createTile(el);
-      tableEl.appendChild(tile);
-    });
-
-    // legend
-    const legendEl = document.getElementById('legend');
-    Object.keys(categoryNames).forEach(key=>{
-      const chip = document.createElement('div');
-      chip.className='chip '+key;
-      chip.textContent = categoryNames[key];
-      legendEl.appendChild(chip);
-    });
-
-    function openModal(el){
-      modal.classList.add('open');
-      modal.setAttribute('aria-hidden','false');
-      modalSym.textContent = el.s;
-      modalName.textContent = el.name;
-      modalNum.textContent = 'Atomic number: '+el.n;
-      modalMass.textContent = 'Atomic mass: '+el.m;
-      modalDesc.textContent = `Category: ${categoryNames[el.cat] || el.cat}. Period ${el.p}, Group ${el.g || '-'}.`;
-    }
-    function closeModal(){
-      modal.classList.remove('open');
-      modal.setAttribute('aria-hidden','true');
-    }
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
-
-    // search
-    document.getElementById('search').addEventListener('input', (e)=>{
-      const q = e.target.value.trim().toLowerCase();
-      document.querySelectorAll('.element').forEach(el=>{
-        const s = el.getAttribute('data-search');
-        if(!q) { el.style.filter = ''; el.style.opacity = 1; return; }
-        if(s.includes(q)) { el.style.filter='none'; el.style.opacity=1; }
-        else { el.style.filter='grayscale(80%) opacity(0.35)'; el.style.opacity=0.45 }
-      });
-    });
-
-    // small enhancement: tooltips on hover (title)
-    document.querySelectorAll('.element').forEach(el=>{
-      const txt = el.querySelector('.name').textContent + ' — ' + el.querySelector('.mass').textContent;
-      el.title = txt;
-    });
-
-  </script>
+  <!-- small caption -->
+  <p style="margin-top:14px; opacity:0.7; font-size:13px;">Hover an element for details — full 118 elements shown including lanthanide/actinide series.</p>
 </body>
 </html>
