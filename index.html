@@ -1,9 +1,8 @@
-# Create the final HTML file as requested by the user.
-html = r"""<!DOCTYPE html>
+html = <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>네온 주기율표 (118)</title>
+  <title>쿼터파이 주기율표</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css">
   <style>
@@ -36,15 +35,21 @@ html = r"""<!DOCTYPE html>
   </style>
 </head>
 <body>
-  <!-- Top navigation (no Apple logo; text-only) -->
+  <!-- Top navigation (QPI 로고 + 링크) -->
   <nav class="topnav" aria-label="주요">
-    <ul>
-      <li><a href="#overview">개요</a></li>
-      <li><a href="#categories">분류</a></li>
-      <li><a href="#table">표</a></li>
-      <li><a href="#info">정보</a></li>
-    </ul>
+    <div class="topnav-inner">
+      <!-- 왼쪽 로고 -->
+      <div class="brand">QPI</div>
+      <!-- 오른쪽 메뉴 -->
+      <ul class="navlinks">
+        <li><a href="#overview">개요</a></li>
+        <li><a href="#categories">분류</a></li>
+        <li><a href="#table">표</a></li>
+        <li><a href="#info">정보</a></li>
+      </ul>
+    </div>
   </nav>
+
 
   <!-- Hero copy in Korean; no Learn More button -->
   <header id="overview" class="hero" role="banner">
@@ -199,7 +204,7 @@ html = r"""<!DOCTYPE html>
   </div>
 
   <footer id="info" class="note" role="contentinfo">
-    이 표는 표준 주기율 배치(IUPAC 명명법)를 기준으로 구성되었으며, 교육·참고 용도로 제공됩니다.
+    이 웹 사이트는 교육용입니다. © 2025 QPI 주기율표표 BY QPI
   </footer>
 
   <script>
@@ -291,6 +296,3 @@ html = r"""<!DOCTYPE html>
   </script>
 </body>
 </html>"""
-with open("/mnt/data/index-final.html", "w", encoding="utf-8") as f:
-    f.write(html)
-print("Saved to /mnt/data/index-final.html")
