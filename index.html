@@ -166,7 +166,6 @@ transition:opacity .2s ease;}
   사분주율 © 대석현 — 한글날 기념 조선 감성 주기율표
 </footer>
 <script>
-// 순우리말 이름 매핑표
 const nativeNames = {
   H:"물숨", He:"숨돌이", Li:"가벼쇠", Be:"단단쇠", B:"유리쇠", C:"숯", N:"숨기운", O:"불숨", F:"독숨", Ne:"빛숨",
   Na:"소금쇠", Mg:"불빛쇠", Al:"흰쇠", Si:"모래쇠", P:"빛돌", S:"유황", Cl:"푸른숨", Ar:"고요숨",
@@ -183,7 +182,6 @@ const nativeNames = {
   Rf:"라더쇠", Db:"두쇠", Sg:"세쇠", Bh:"보쇠", Hs:"힘쇠", Mt:"메쇠", Ds:"다쇠", Rg:"로쇠", Cn:"코쇠", Nh:"일쇠", Fl:"플쇠", Mc:"모쇠", Lv:"리쇠", Ts:"텐숨", Og:"끝숨"
 };
 
-// 각 원소 사각형 안 기호를 순우리말로 교체
 document.querySelectorAll('.element').forEach(el=>{
   const symEl = el.querySelector('.sym');
   if(symEl && nativeNames[symEl.textContent.trim()]){
@@ -192,5 +190,39 @@ document.querySelectorAll('.element').forEach(el=>{
 });
 </script>
 
+<script>
+(function(){
+  const els = Array.from(document.querySelectorAll('.element'));
+  const byAtnum = (n)=> els.find(e => (e.querySelector('.atnum')?.textContent || '').trim() === String(n));
+
+  const lu = byAtnum(71);
+  if(lu){
+    lu.style.gridRow = '9';
+    lu.style.gridColumn = '17';
+  }
+
+  const lr = byAtnum(103);
+  if(lr){
+    lr.style.gridRow = '10';
+    lr.style.gridColumn = '17';
+  }
+
+
+  function shiftRowLeft(row, startColInclusive){
+    const rowEls = els
+      .filter(e => Number(e.style.gridRow) === row && Number(e.style.gridColumn) >= startColInclusive)
+      .sort((a,b)=> Number(a.style.gridColumn) - Number(b.style.gridColumn));
+    rowEls.forEach(e => {
+      const c = Number(e.style.gridColumn);
+      e.style.gridColumn = String(c - 1);
+    });
+  }
+
+  shiftRowLeft(4, 4); // 
+  shiftRowLeft(5, 4); // 
+  shiftRowLeft(6, 5); // 
+  shiftRowLeft(7, 5); // 
+})();
+</script>
 </body>
 </html>
