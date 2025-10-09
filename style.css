@@ -1,127 +1,199 @@
-@import url('https://fonts.cdnfonts.com/css/br-cobane');
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+/* ────────────────────────────── */
+/*  🎨 조선 감성 한글날 패치 CSS   */
+/* ────────────────────────────── */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Gowun+Batang&family=Nanum+Brush+Script&display=swap');
 
 :root{
-    --c-lbg: rgb(250 250 250);
-    --c-dbg: rgb(35 35 35);
-    --c-ltext: rgb(250 250 250);
-    --c-dtext: rgb(28 28 30);
-    --c-grayl3: rgb(229 229 234);
-    --c-grayl2: rgb(199 199 204);
-    --c-grayl1: rgb(174 174 178);
-    --c-gray: rgb(142 142 147);
-    --c-grayd1: rgb(99 99 102);
-    --c-grayd2: rgb(72 72 74);
-    --c-grayd3: rgb(58 58 60);
-    --c-black: rgb(0 0 0);
+  --c-lbg:#f9f7f2;     /* 한지색 배경 */
+  --c-dbg:#191716;     /* 먹색 */
+  --c-ltext:#2b2b2b;   /* 잉크색 */
+  --c-dtext:#f4f2ee;
 
+  /* 단청팔레트 (조선풍) */
+  --alkali:#c0392b;    /* 주홍 */
+  --alkaline:#d4a017;  /* 황토 */
+  --transition:#1f618d;/* 남색 */
+  --post:#006442;      /* 녹청 */
+  --metalloid:#9a7d0a; /* 갈색 */
+  --nonmetal:#873600;  /* 적갈 */
+  --halogen:#943126;   /* 붉은 주 */
+  --noble:#6c3483;     /* 자색 */
+  --lanthanide:#117864;/* 청록 */
+  --actinide:#76448a;  /* 보라 */
+  --unknown:#5b5b5b;
 
-    /* 네온 팔레트 */
-    --alkali: #ff4dd2;
-    --alkaline: #ffb84d;
-    --transition: #00e6e6;
-    --post: #79ff4d;
-    --metalloid: #d1ff52;
-    --nonmetal: #8aefff;
-    --halogen: #ff6b6b;
-    --noble: #a78bfa;
-    --lanthanide: #00ffa2;
-    --actinide: #ff8af0;
-    --unknown: #bfbfbf;
-
-    --bg: var(--c-dbg);
-    --tile: var(--c-dtext);
-    --text: var(--c-ltext);
+  --bg:var(--c-lbg);
+  --tile:var(--c-dtext);
+  --text:var(--c-ltext);
 }
 
-* { box-sizing: border-box; }
-body {
-    margin: 0;
-    font-family: 'BR Cobane', 'Pretendard Variable', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple SD Gothic Neo, Noto Sans KR, "맑은 고딕", "Malgun Gothic", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    display: flex; justify-content: center; align-items: center; flex-direction: column;
-    min-height: 100vh; padding: 24px;
-    overflow: hidden;
-}
-h1{ margin: 2px 0 48px 0; font-weight: 700; letter-spacing: .2px; }
-
-.table-wrap {
-    display: grid;
-    grid-template-columns: repeat(19, 57px);
-    grid-auto-rows: 57px;
-    gap: 6px;
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0;
+  background:var(--bg) url('https://cdn.jsdelivr.net/gh/StudioSakuHanji/textures/hanji-bg.png');
+  background-size:cover;
+  color:var(--text);
+  font-family:'Gowun Dodum','Gowun Batang',sans-serif;
+  display:flex; flex-direction:column; align-items:center;
+  min-height:100vh; padding:24px 24px 40px;
+  overflow-y:auto; overflow-x:hidden;
 }
 
-@keyframes rainbow {
-    from {
-    --hue: 0;
-    }
-    to {
-    --hue: 360;
-    }
+/* ─ Topbar ─ */
+.topnav{
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  height:56px; display:flex; align-items:center;
+  background:#fdfaf4cc;
+  backdrop-filter:blur(10px);
+  color:#4a3b29;
+  border-bottom:1px solid #cbbfa3;
 }
+.topnav-inner{
+  width:100%; max-width:1200px; margin:0 auto;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px;
+}
+.brand{
+  font-family:'Nanum Brush Script';
+  font-size:26px; font-weight:600;
+  color:#4a3b29;
+  letter-spacing:2px;
+  user-select:none;
+  cursor:default;
+}
+.navlinks{ list-style:none; display:flex; gap:24px; margin:0; padding:0; font-size:15px; }
+.navlinks a{
+  color:#6b5840;
+  font-family:'Gowun Dodum';
+  text-decoration:none;
+}
+.navlinks a:hover{ color:#000 }
+
+/* ─ Hero ─ */
+.hero{
+  width:100%; max-width:1200px;
+  text-align:center;
+  padding-top:76px;
+}
+.hero h1{
+  margin:10px 0 10px;
+  font-family:'Nanum Brush Script';
+  font-size:52px;
+  color:#2e1f16;
+  letter-spacing:3px;
+}
+.hero p{
+  margin:0;
+  opacity:.9;
+  font-size:17px;
+  line-height:1.7;
+  font-family:'Gowun Batang';
+  color:#3a2d1f;
+}
+.hero .sub{
+  display:block;
+  margin-top:6px;
+  opacity:.66;
+  font-size:14px;
+}
+
+/* ─ Grid ─ */
+.table-wrap{
+  display:grid;
+  grid-template-columns:repeat(19,57px);
+  grid-auto-rows:57px;
+  gap:6px;
+  margin-top:24px;
+}
+.label-row{ grid-column:1 / -1; height:14px; }
 
 .element{
-    position: relative;
-    border-radius: 10px;
-    background: var(--tile);
-    display: flex; justify-content: center; align-items: center;
-    font-weight: 700; font-size: 17px; letter-spacing: .2px;
-    border: 2px solid var(--color);
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    box-shadow: 0 0 2px 1px var(--color), inset 0 0 10px #00000055;
+  position:relative;
+  border-radius:12px;
+  background:#fff7efcc;
+  display:flex; justify-content:center; align-items:center;
+  font-weight:800;
+  font-size:17px;
+  letter-spacing:.2px;
+  border:2px solid var(--color);
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  box-shadow:0 0 6px #00000030, inset 0 0 6px #00000010;
+  user-select:none;
 }
 .element .atnum{
-    position:absolute; top:6px; left:7px; font-size:10px; opacity:.85; font-weight:700;
+  position:absolute;
+  top:6px; left:7px;
+  font-size:10px;
+  opacity:.85;
+  font-weight:700;
+  font-family:'Gowun Dodum';
+  color:#3a2d1f;
 }
-.element .sym{ font-size:18px; }
-
-/* 네온 프레임(카테고리별) — 블록 배경은 유지, 외곽선/그로우만 */
-.alkali      { --color: var(--alkali); }
-.alkaline    { --color: var(--alkaline); }
-.transition  { --color: var(--transition); }
-.post        { --color: var(--post); }
-.metalloid   { --color: var(--metalloid); }
-.nonmetal    { --color: var(--nonmetal); }
-.halogen     { --color: var(--halogen); }
-.noble       { --color: var(--noble); }
-.lanthanide  { --color: var(--lanthanide); }
-.actinide    { --color: var(--actinide); }
-.unknown     { --color: oklch(0.7 0.1646 var(--hue)); animation: linear 3s infinite rainbow; }
+.element .sym{
+  font-size:18px;
+  font-family:'Nanum Brush Script';
+  color:#2e1f16;
+}
 
 .element:hover{
-    transform: scale(1.08);
-    box-shadow: 0 0 18px #ffffffcc, inset 0 0 10px #00000055;
-    z-index: 5;
+  transform:scale(1.08);
+  box-shadow:0 0 20px #00000066, inset 0 0 10px #fff5dd66;
+  z-index:5;
 }
 
-/* Tooltip */
+/* 카테고리 색상 */
+.alkali{--color:var(--alkali)}
+.alkaline{--color:var(--alkaline)}
+.transition{--color:var(--transition)}
+.post{--color:var(--post)}
+.metalloid{--color:var(--metalloid)}
+.nonmetal{--color:var(--nonmetal)}
+.halogen{--color:var(--halogen)}
+.noble{--color:var(--noble)}
+.lanthanide{--color:var(--lanthanide)}
+.actinide{--color:var(--actinide)}
+.unknown{--color:var(--unknown)}
+
+/* ─ Tooltip (족자풍) ─ */
 .tooltip{
-    visibility: hidden; opacity: 0;
-    position: absolute; bottom: 57px; left:50%; transform: translateX(-50%);
-    background:#fff; color:#000; padding: 9px 11px;
-    border-radius:10px; font-size:12px; white-space:nowrap;
-    box-shadow: 0 8px 20px rgba(0,0,0,.45);
-    transition: opacity .18s ease, transform .18s ease;
-    pointer-events: none; border:1px solid #eee;
+  visibility:hidden; opacity:0;
+  position:absolute;
+  bottom:57px; left:50%;
+  transform:translateX(-50%);
+  background:#fffdf8;
+  color:#3a2d1f;
+  padding:10px 12px;
+  border-radius:8px;
+  font-size:13px;
+  white-space:nowrap;
+  box-shadow:0 6px 14px rgba(0,0,0,.35);
+  border:1px solid #b3a284;
+  font-family:'Gowun Batang';
+  transition:opacity .2s ease, transform .2s ease;
+  pointer-events:none;
 }
-.element:hover .tooltip{ visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-4px); }
-.tooltip .ename{ display:block; font-weight:800; margin-top:4px; }
-.tooltip .kdesc{ display:block; margin-top:3px; opacity:.9; }
+.element:hover .tooltip{
+  visibility:visible;
+  opacity:1;
+  transform:translateX(-50%) translateY(-4px);
+}
+.tooltip .ename{
+  display:block;
+  font-weight:700;
+  margin-top:4px;
+  font-family:'Gowun Dodum';
+  color:#2b1b12;
+}
 
-.label-row { grid-column:1 / -1; height:14px; }
-
-/* 반응형 축소 */
-@media (max-width: 980px){
-    .table-wrap { transform: scale(.82); transform-origin: top center; }
+/* Responsive */
+@media (max-width:980px){
+  .table-wrap{ transform:scale(.82); transform-origin:top center; }
 }
-@media (max-width: 720px){
-    .table-wrap { transform: scale(.7); }
+@media (max-width:720px){
+  .table-wrap{ transform:scale(.7); }
 }
 
-@property --hue {
-    syntax: "<number>";
-    initial-value: 0;
-    inherits: false;
-}
+/* ────────────────────────────── */
