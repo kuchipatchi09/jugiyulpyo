@@ -116,5 +116,30 @@ transition:opacity .2s ease;}
 <footer style="text-align:center;margin-top:40px;font-family:'Gowun Batang';">
   사분주율 © 대석현 — 한글날 기념 조선 감성 주기율표
 </footer>
+// 순우리말 이름 매핑표
+const nativeNames = {
+  H:"물숨", He:"숨돌이", Li:"가벼쇠", Be:"단단쇠", B:"유리쇠", C:"숯", N:"숨기운", O:"불숨", F:"독숨", Ne:"빛숨",
+  Na:"소금쇠", Mg:"불빛쇠", Al:"흰쇠", Si:"모래쇠", P:"빛돌", S:"유황", Cl:"푸른숨", Ar:"고요숨",
+  K:"자주쇠", Ca:"뼈쇠", Sc:"희쇠", Ti:"강쇠", V:"빛쇠", Cr:"색쇠", Mn:"보조쇠", Fe:"쇠", Co:"푸른쇠", Ni:"은회쇠",
+  Cu:"붉쇠", Zn:"하얀쇠", Ga:"녹쇠", Ge:"반쇠", As:"독돌", Se:"달빛돌", Br:"붉숨", Kr:"빛기운",
+  Rb:"보랏쇠", Sr:"빨강쇠", Y:"희돌쇠", Zr:"불쇠", Nb:"빛받쇠", Mo:"모쇠", Tc:"별쇠", Ru:"은쇠", Rh:"빛쇠", Pd:"흰빛쇠",
+  Ag:"은", Cd:"연쇠", In:"울쇠", Sn:"석쇠", Sb:"회돌", Te:"은돌", I:"보랏숨", Xe:"밝숨",
+  Cs:"푸른쇠", Ba:"무쇠", La:"숨쇠", Ce:"하늘쇠", Pr:"푸른돌쇠", Nd:"자쇠", Pm:"별숨쇠", Sm:"빛돌쇠", Eu:"붉쇠", Gd:"자빛쇠",
+  Tb:"빛돌쇠", Dy:"은돌쇠", Ho:"희돌쇠", Er:"붉돌쇠", Tm:"푸른돌쇠", Yb:"빛쇠돌", Lu:"마지막쇠",
+  Hf:"단쇠", Ta:"참쇠", W:"불심쇠", Re:"귀쇠", Os:"냄쇠", Ir:"빛쇠", Pt:"백금", Au:"금", Hg:"수은",
+  Tl:"독쇠", Pb:"납", Bi:"비쇠", Po:"달쇠", At:"끝숨돌", Rn:"숨돌",
+  Fr:"희숨쇠", Ra:"빛숨쇠", Ac:"빛쇠돌", Th:"불빛쇠", Pa:"숨쇠돌", U:"우라쇠", Np:"바다쇠", Pu:"불쇠돌",
+  Am:"별쇠돌", Cm:"빛쇠돌", Bk:"서쇠돌", Cf:"별빛쇠", Es:"숨빛쇠", Fm:"마무쇠", Md:"끝쇠", No:"밤쇠", Lr:"새쇠",
+  Rf:"라더쇠", Db:"두쇠", Sg:"세쇠", Bh:"보쇠", Hs:"힘쇠", Mt:"메쇠", Ds:"다쇠", Rg:"로쇠", Cn:"코쇠", Nh:"일쇠", Fl:"플쇠", Mc:"모쇠", Lv:"리쇠", Ts:"텐숨", Og:"끝숨"
+};
+
+// 각 원소 사각형 안 기호를 순우리말로 교체
+document.querySelectorAll('.element').forEach(el=>{
+  const symEl = el.querySelector('.sym');
+  if(symEl && nativeNames[symEl.textContent.trim()]){
+    symEl.textContent = nativeNames[symEl.textContent.trim()];
+  }
+});
+
 </body>
 </html>
